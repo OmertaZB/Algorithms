@@ -11,21 +11,21 @@ runs = 51;
 RecordFEsFactor = ...
     [0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4, ...
     0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
-progress = numel(RecordFEsFactor);% ∑µªÿ14
+progress = numel(RecordFEsFactor);% ËøîÂõû14
 
 for problem_size = [10]
-    max_nfes = 10000 * problem_size;%◊Ó¥Û∆¿º€¥Œ ˝
+    max_nfes = 10000 * problem_size-3000;%ÊúÄÂ§ßËØÑ‰ª∑Ê¨°Êï∞
     rand('seed', sum(100 * clock));
     lu = [-100 * ones(1, problem_size); 100 * ones(1, problem_size)];
     fprintf('Running algorithm\n')
     
-    %% ÀÊª˙”Œ◊ﬂ£¨ªÒ»°Œ Ã‚Ãÿ’˜;‘§≤‚≤ﬂ¬‘
+    %% ÈöèÊú∫Ê∏∏Ëµ∞ÔºåËé∑ÂèñÈóÆÈ¢òÁâπÂæÅ;È¢ÑÊµãÁ≠ñÁï•
     H = Rug_inf_entr(problem_size);
     FeatureVector = H;
     predict_label = Ran_For(FeatureVector,problem_size);
     predict_label = str2num(char(predict_label));
     for func = 1 : 30
-        %%   π”√EDAÀ„∑®
+        %%  ‰ΩøÁî®EDAÁÆóÊ≥ï
         if predict_label(func) == 1
             optimum = func * 100.0;
             %% Record the best results
@@ -34,7 +34,7 @@ for problem_size = [10]
             fprintf('\n-------------------------------------------------------\n')
             fprintf('Function = %d, Dimension size = %d\n', func, problem_size)
             
-            allerrorvals = zeros(progress, runs);%º«¬º14∏ˆµ„
+            allerrorvals = zeros(progress, runs);%ËÆ∞ÂΩï14‰∏™ÁÇπ
             parfor run_id = 1 : runs
                 a = [];
                 b = [];
@@ -42,7 +42,7 @@ for problem_size = [10]
                 run_funcvals = [];
                 nfes = 0;
                 
-                %% ≤Œ ˝…Ë÷√
+                %% ÂèÇÊï∞ËÆæÁΩÆ
                 PS_max = 100 * problem_size;
                 PS_min = 0.5 * (problem_size^2 + problem_size);
                 min_pop_size = PS_min;
@@ -82,11 +82,11 @@ for problem_size = [10]
                     w = 0;
                     Sup_Pop = [];
                     NN = round(pop_size * tao);
-                    %% —°‘Ò”≈ ∆∏ˆÃÂ£®Ωÿ∂œ—°‘Ò£©
+                    %% ÈÄâÊã©‰ºòÂäø‰∏™‰ΩìÔºàÊà™Êñ≠ÈÄâÊã©Ôºâ
                     [FitnessValue,index]=sort(fitness);
                     i=1:NN;
                     Sup_Pop(i,:) = pop(index(i),:);
-                    %% ∏¸–¬ƒ£–Õ && Algorithm 2                   
+                    %% Êõ¥Êñ∞Ê®°Âûã && Algorithm 2                   
                     for i = 1:size( Sup_Pop, 1)
                         a(i,:) = (sum(FitnessValue(1 : NN,1)) - FitnessValue(i)).*  Sup_Pop(i,:);
                         b(i,:) = sum(FitnessValue(1 : NN,1)) - FitnessValue(i);
@@ -109,11 +109,11 @@ for problem_size = [10]
                     ct = (Sup_Pop - repmat(mut2,size(Sup_Pop,1),1))' * (Sup_Pop - repmat(mut2,size(Sup_Pop,1),1));                   
                     ct = ct/size( Sup_Pop, 1);
                     ct = (ct + ct.') / 2;
-                    % Ω®¡¢–¬µƒƒ£–Õ£®∏˘æ›“‘…œ£©
+                    % Âª∫Á´ãÊñ∞ÁöÑÊ®°ÂûãÔºàÊ†πÊçÆ‰ª•‰∏äÔºâ
                     pop_new = mvnrnd(mut2,ct,pop_size - 1);
                     pop_new = [pop_new;bsf_solution];
                     pop_new = boundConstraint2(pop_new,popold,lu);
-                    %% º∆À„  ”¶∂»÷µ
+                    %% ËÆ°ÁÆóÈÄÇÂ∫îÂ∫¶ÂÄº
                     fitness3 = feval(fhd,pop_new',func);
                     fitness3 = fitness3';
                     %%%%%%%%%%%%%%%%%%%%%%%% for out
@@ -135,7 +135,7 @@ for problem_size = [10]
                     
                     fitness = fitness3;
                     pop = pop_new;
-                    %% for resizing the population size µ˜’˚÷÷»∫πÊƒ£
+                    %% for resizing the population size Ë∞ÉÊï¥ÁßçÁæ§ËßÑÊ®°
                     
                     %                     plan_pop_size = round((((min_pop_size - max_pop_size) / max_nfes) * nfes) + max_pop_size);
                     %
@@ -180,7 +180,7 @@ for problem_size = [10]
                 if(sum(isnan(bsf_solution))>0)
                     fprintf('%d th run, NaN\n', run_id)
                 end
-                %%  ‰≥ˆ£¨œ‘ æ
+                %% ËæìÂá∫ÔºåÊòæÁ§∫
                 fprintf('%d th run, best-so-far error value = %1.8e\n', run_id , bsf_error_val)
                 outcome = [outcome bsf_error_val];
                 
@@ -198,7 +198,7 @@ for problem_size = [10]
                 allerrorvals(:, run_id) = errorVals;
             end % end 1 run
             
-            %%  π”√LSHADEÀ„∑®
+            %% ‰ΩøÁî®LSHADEÁÆóÊ≥ï
         else
             optimum = func * 100.0;
             %% Record the best results
@@ -207,7 +207,7 @@ for problem_size = [10]
             fprintf('\n-------------------------------------------------------\n')
             fprintf('Function = %d, Dimension size = %d\n', func, problem_size)
             
-            allerrorvals = zeros(progress, runs);%º«¬º14∏ˆµ„
+            allerrorvals = zeros(progress, runs);%ËÆ∞ÂΩï14‰∏™ÁÇπ
             parfor run_id = 1 : runs
                 %tic
                 run_funcvals = [];
@@ -223,7 +223,7 @@ for problem_size = [10]
                 min_pop_size = 4.0;
                 ps = 0.5;
                 record_CR = [];
-                %% ≤˙…˙≥ı º÷÷»∫
+                %% ‰∫ßÁîüÂàùÂßãÁßçÁæ§
                 popold = repmat(lu(1, :), pop_size, 1) + rand(pop_size, problem_size) .* (repmat(lu(2, :) - lu(1, :), pop_size, 1));
                 pop = popold;
                 fitness = feval(fhd,pop',func);
@@ -260,7 +260,7 @@ for problem_size = [10]
                 archive.pop = zeros(0, problem_size); % the solutions stored in te archive
                 archive.funvalues = zeros(0, 1); % the function value of the archived solutions
                 
-                %% main loop  ÷˜—≠ª∑
+                %% main loop  ‰∏ªÂæ™ÁéØ
                 
                 while nfes < max_nfes
                     
@@ -271,14 +271,14 @@ for problem_size = [10]
                     mu_sf = memory_sf(mem_rand_index);
                     mu_cr = memory_cr(mem_rand_index);
                     
-                    %% for generating crossover rate   ≤˙…˙Ωª≤Ê¬ 
-                    cr = normrnd(mu_cr, 0.1);%’˝Ã¨∑÷≤º
+                    %% for generating crossover rate   ‰∫ßÁîü‰∫§ÂèâÁéá
+                    cr = normrnd(mu_cr, 0.1);%Ê≠£ÊÄÅÂàÜÂ∏É
                     term_pos = find(mu_cr == -1);
                     cr(term_pos) = 0;
                     cr = min(cr, 1);
                     cr = max(cr, 0);
                     
-                    %% for generating scaling factor  ”√”⁄…˙≥…Àı∑≈“Ú◊”F
+                    %% for generating scaling factor  Áî®‰∫éÁîüÊàêÁº©ÊîæÂõ†Â≠êF
                     sf = mu_sf + 0.1 * tan(pi * (rand(pop_size, 1) - 0.5));
                     pos = find(sf <= 0);
                     
@@ -289,22 +289,22 @@ for problem_size = [10]
                     sf = min(sf, 1);
                     r0 = [1 : pop_size];
                     popAll = [pop; archive.pop];
-                    [r1, r2] = gnR1R22(pop_size, size(popAll, 1), r0);%ÀÊª˙—°¡Ω∏ˆ∏ˆÃÂ
-                    pNP = max(round(p_best_rate * pop_size), 2); %% choose at least two best solutions —°‘Ò÷¡…Ÿ¡Ω∏ˆ◊Ó∫√µƒΩ‚æˆ∑Ω∞∏
-                    randindex = ceil(rand(1, pop_size) .* pNP); %% select from [1, 2, 3, ..., pNP]    ¥”[1£¨2£¨3£¨...£¨pNP]÷–—°‘Ò
-                    randindex = max(1, randindex); %% to avoid the problem that rand = 0 and thus ceil(rand) = 0 ±‹√‚rand = 0£¨ceil£®rand£©= 0µƒŒ Ã‚
-                    pbest = pop(sorted_index(randindex), :); %% randomly choose one of the top 100p% solutions ÀÊª˙—°‘Ò«∞100p£•Ω‚æˆ∑Ω∞∏÷Æ“ª
+                    [r1, r2] = gnR1R22(pop_size, size(popAll, 1), r0);%ÈöèÊú∫ÈÄâ‰∏§‰∏™‰∏™‰Ωì
+                    pNP = max(round(p_best_rate * pop_size), 2); %% choose at least two best solutions ÈÄâÊã©Ëá≥Â∞ë‰∏§‰∏™ÊúÄÂ•ΩÁöÑËß£ÂÜ≥ÊñπÊ°à
+                    randindex = ceil(rand(1, pop_size) .* pNP); %% select from [1, 2, 3, ..., pNP]    ‰ªé[1Ôºå2Ôºå3Ôºå...ÔºåpNP]‰∏≠ÈÄâÊã©
+                    randindex = max(1, randindex); %% to avoid the problem that rand = 0 and thus ceil(rand) = 0 ÈÅøÂÖçrand = 0ÔºåceilÔºàrandÔºâ= 0ÁöÑÈóÆÈ¢ò
+                    pbest = pop(sorted_index(randindex), :); %% randomly choose one of the top 100p% solutions ÈöèÊú∫ÈÄâÊã©Ââç100pÔºÖËß£ÂÜ≥ÊñπÊ°à‰πã‰∏Ä
                     
-                    %% ±‰“Ï
+                    %% ÂèòÂºÇ
                     
-                    %% ±‰“Ï(≤ªÕ¨)
-                    vi = pop + sf(:, ones(1, problem_size)) .* (pbest - pop + pop(r1, :) - popAll(r2, :));   %π´ Ω3
-                    vi = boundConstraint2(vi, pop, lu);%ºÏ≤È±ﬂΩÁ
+                    %% ÂèòÂºÇ(‰∏çÂêå)
+                    vi = pop + sf(:, ones(1, problem_size)) .* (pbest - pop + pop(r1, :) - popAll(r2, :));   %ÂÖ¨Âºè3
+                    vi = boundConstraint2(vi, pop, lu);%Ê£ÄÊü•ËæπÁïå
                     
-                    %% Ωª≤Ê
-                    mask = rand(pop_size, problem_size) > cr(:, ones(1, problem_size)); % mask is used to indicate which elements of ui comes from the parent ”√”⁄÷∏ æƒƒ–©‘™Àÿ¿¥◊‘∏∏
+                    %% ‰∫§Âèâ
+                    mask = rand(pop_size, problem_size) > cr(:, ones(1, problem_size)); % mask is used to indicate which elements of ui comes from the parent Áî®‰∫éÊåáÁ§∫Âì™‰∫õÂÖÉÁ¥†Êù•Ëá™Áà∂
                     rows = (1 : pop_size)';
-                    cols = floor(rand(pop_size, 1) * problem_size)+1; % choose one position where the element of ui doesn't come from the parent —°‘Ò“ª∏ˆuiµƒ‘™Àÿ≤ª «¿¥◊‘∏∏ƒ∏µƒŒª÷√
+                    cols = floor(rand(pop_size, 1) * problem_size)+1; % choose one position where the element of ui doesn't come from the parent ÈÄâÊã©‰∏Ä‰∏™uiÁöÑÂÖÉÁ¥†‰∏çÊòØÊù•Ëá™Áà∂ÊØçÁöÑ‰ΩçÁΩÆ
                     jrand = sub2ind([pop_size problem_size], rows, cols);
                     mask(jrand) = false;
                     ui = vi;
@@ -332,7 +332,7 @@ for problem_size = [10]
                     dif = abs(fitness - children_fitness);
                     
                     
-                    I = (fitness > children_fitness);% ÷µŒ™1¥˙±Ì∏∏¥˙µƒΩ‚Ωœ≤Ó£¨Œ™0¥˙±Ì∏∏¥˙µƒΩ‚Ωœ∫√
+                    I = (fitness > children_fitness);% ÂÄº‰∏∫1‰ª£Ë°®Áà∂‰ª£ÁöÑËß£ËæÉÂ∑ÆÔºå‰∏∫0‰ª£Ë°®Áà∂‰ª£ÁöÑËß£ËæÉÂ•Ω
                     goodCR = cr(I == 1);
                     goodF = sf(I == 1);
                     dif_val = dif(I == 1);
@@ -340,9 +340,9 @@ for problem_size = [10]
                     %      isempty(popold(I == 1, :))
                     archive = updateArchive2(archive, popold(I == 1, :), fitness(I == 1));
                     
-                    %% —°‘Ò £®I == 1: the parent is better; I == 2: the offspring is better£©
+                    %% ÈÄâÊã© ÔºàI == 1: the parent is better; I == 2: the offspring is betterÔºâ
                     
-                    [fitness, I] = min([fitness, children_fitness], [], 2);%—°‘Ò
+                    [fitness, I] = min([fitness, children_fitness], [], 2);%ÈÄâÊã©
                     
                     %run_funcvals = [run_funcvals; fitness];
                     popold(I == 2, :) = ui(I == 2, :);
@@ -353,10 +353,10 @@ for problem_size = [10]
                         sum_dif = sum(dif_val);
                         dif_val = dif_val / sum_dif;
                         
-                        %% for updating the memory of scaling factor  ”√”⁄∏¸–¬±»¿˝“Ú◊”µƒ¥Ê¥¢∆˜
+                        %% for updating the memory of scaling factor  Áî®‰∫éÊõ¥Êñ∞ÊØî‰æãÂõ†Â≠êÁöÑÂ≠òÂÇ®Âô®
                         memory_sf(memory_pos) = (dif_val' * (goodF .^ 2)) / (dif_val' * goodF);
                         
-                        %% for updating the memory of crossover rate  ”√”⁄∏¸–¬Ωª≤ÊÀŸ¬ µƒƒ⁄¥Ê
+                        %% for updating the memory of crossover rate  Áî®‰∫éÊõ¥Êñ∞‰∫§ÂèâÈÄüÁéáÁöÑÂÜÖÂ≠ò
                         if max(goodCR) == 0 || memory_cr(memory_pos)  == -1
                             memory_cr(memory_pos)  = -1;
                         else
@@ -368,7 +368,7 @@ for problem_size = [10]
                             memory_pos = 1;
                         end
                     end
-                    %% for resizing the population size µ˜’˚÷÷»∫πÊƒ£
+                    %% for resizing the population size Ë∞ÉÊï¥ÁßçÁæ§ËßÑÊ®°
                     plan_pop_size = round((((min_pop_size - max_pop_size) / max_nfes) * nfes) + max_pop_size);
                     
                     if pop_size > plan_pop_size
@@ -419,7 +419,7 @@ for problem_size = [10]
                 if(sum(isnan(bsf_solution))>0)
                     fprintf('%d th run, NaN\n', run_id)
                 end
-                %%  ‰≥ˆ
+                %% ËæìÂá∫
                 fprintf('%d th run, best-so-far error value = %1.8e\n', run_id , bsf_error_val)
                 outcome = [outcome bsf_error_val];
                 
@@ -440,13 +440,6 @@ for problem_size = [10]
         end
         fprintf('\n')
         fprintf('min error value = %1.8e, max = %1.8e, median = %1.8e, mean = %1.2e, std = %1.2e\n', min(outcome), max(outcome), median(outcome), mean(outcome), std(outcome))
-        
-        
-        %         file_name=sprintf('P_10D_01_10\\CEDDEA_CEC2017_Problem#%s_problemSize#%s',int2str(func),int2str(problem_size));
-        %         save(file_name,'outcome', 'allerrorvals');
-        %
-        %
-        %         file_name=sprintf('P_10D_01_10\\CEDDEA_%s_%s.txt',int2str(func),int2str(problem_size));
-        %         save(file_name, 'allerrorvals', '-ascii');
+    
     end % end 1 func
 end
